@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>S7bat Chat</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Inter:wght@300&display=swap');
+        :root { --neon: #00ff9d; --bg: #0a0a0a; }
+        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        
+        /* Start Menu */
+        #start-menu { text-align: center; z-index: 10; }
+        .btn-start { padding: 20px 40px; background: transparent; border: 2px solid var(--neon); color: var(--neon); font-size: 1.5rem; cursor: pointer; border-radius: 50px; transition: 0.3s; }
+        .btn-start:hover { background: var(--neon); color: black; box-shadow: 0 0 20px var(--neon); }
+
+        /* Chat Interface */
+        #chat-app { display: none; width: 90%; max-width: 500px; background: rgba(255,255,255,0.05); backdrop-filter: blur(15px); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
+        #chat-window { height: 300px; overflow-y: auto; margin-bottom: 15px; border-bottom: 1px solid #333; }
+        input { width: 75%; background: #222; border: none; padding: 12px; border-radius: 10px; color: white; }
+        
+        /* Watermark */
+        footer { position: fixed; bottom: 10px; font-size: 0.8rem; color: #555; text-align: center; width: 100%; }
+    </style>
+</head>
+<body>
+
+<div id="start-menu">
+    <h1 style="color:var(--neon); font-family: 'Orbitron';">S7BAT</h1>
+    <button class="btn-start" onclick="enterChat()">START CHATTING</button>
+</div>
+
+<div id="chat-app">
+    <h2 style="text-align:center; margin-top:0;">S7BAT</h2>
+    <div id="chat-window"></div>
+    <div style="display:flex; gap:10px;">
+        <input type="text" id="msgInput" placeholder="Type something...">
+        <button onclick="sendMessage()" style="background:var(--neon); border:none; padding:10px; border-radius:10px;">SEND</button>
+    </div>
+</div>
+
+<footer>Made by Zerkogamedev | Ads: insta @a7madzax0</footer>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+    function enterChat() {
+        document.getElementById('start-menu').style.display = 'none';
+        document.getElementById('chat-app').style.display = 'block';
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('msgInput');
+        socket.emit('message', { text: input.value, username: 'User' });
+        input.value = '';
+    }
+
+    socket.on('chatMessage', (data) => {
+        const div = document.createElement('div');
+        div.innerHTML = `<b style="color:var(--neon)">${data.user}:</b> ${data.text}`;
+        document.getElementById('chat-window').appendChild(div);
+    });
+</script>
+</body>
+</html>
